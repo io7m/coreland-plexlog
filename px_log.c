@@ -1,29 +1,7 @@
-#include <chrono/taia.h>
 #include <corelib/str.h>
 
 #define PLEXLOG_IMPLEMENTATION
 #include "plexlog.h"
-
-static const char *
-px_lev_str(enum plexlog_level lev)
-{
-  static const struct {
-    enum plexlog_level val;
-    const char *str;
-  } strings[] = {
-    { PXLOG_NONE, "" },
-    { PXLOG_DEBUG, "debug" },
-    { PXLOG_INFO, "info" },
-    { PXLOG_NOTICE, "notice" },
-    { PXLOG_WARN, "warn" },
-    { PXLOG_ERROR, "error" },
-    { PXLOG_FATAL, "fatal" },
-  };
-  unsigned long ind;
-  for (ind = 0; ind < sizeof(strings) / sizeof(strings[0]); ++ind)
-    if (strings[ind].val == lev) return strings[ind].str;
-  return strings[0].str;
-}
 
 static unsigned long
 px_msg_filter_len(const char *txt, unsigned long txt_len)
@@ -39,18 +17,60 @@ px_msg_filter_len(const char *txt, unsigned long txt_len)
 static unsigned long
 px_msg_total_len(enum plexlog_level lev, const char *txt, unsigned long len)
 {
-  return (TAIA_TAI64N + sizeof("@ "))
-        + str_len(px_lev_str(lev))
+  return (PX_FMT_TIMESTAMP + sizeof(" "))
+        + str_len(px_level_string(lev))
         + sizeof(": ")
         + px_msg_filter_len(txt, len)
         + sizeof("\n");
+}
+
+static int
+px_log_write(struct plexlog *px, const char *tstamp, const char *levstr,
+  const char *msg, unsigned long msglen)
+{
+  unsigned long ind;
+  char cbuf[PX_FMT_CHAR];
+
+  buffer_puts(&px->px_buf, tstamp);
+  buffer_put(&px->px_buf, " ", 1);
+  if (!str_same(levstr, "")) {
+    buffer_puts(&px->px_buf, levstr);
+    buffer_put(&px->px_buf, ": ", 2);
+  }
+
+  for (ind = 0; ind < msglen; ++ind)
+    buffer_put(&px->px_buf, cbuf, px_fmt_char(cbuf, msg[ind]));
+
+  buffer_put(&px->px_buf, "\n", 1);
+  if (buffer_flush(&px->px_buf) == -1) return 0;
+  return 1;
 }
 
 int
 px_logb(struct plexlog *px, enum plexlog_level lev,
   const char *txt, unsigned long len)
 {
-  return px_msg_total_len(lev, txt, len);
+  char tstamp[PX_FMT_TIMESTAMP];
+  unsigned long msglen;
+  int ret = 0;
+
+  msglen = px_msg_total_len(lev, txt, len);
+  if (px->px_size_max && msglen > px->px_size_max) return 0;
+
+  tstamp[px_fmt_timestamp(tstamp)] = 0;
+  if (!px_lock(px)) goto END;
+  if (px->px_size_max) {
+    if (px->px_curstat.st_size + msglen > px->px_size_max)
+      if (!px_rotate(px)) goto END;
+  }
+  if (!px_open_current(px)) goto END;
+  if (!px_log_write(px, tstamp, px_level_string(lev), txt, len)) goto END;
+  if (!px_unlock(px)) return 0;
+
+  ret = 1;
+  END:
+  if (!px_unlock(px)) return 0;
+  return ret; 
 }
 
 int

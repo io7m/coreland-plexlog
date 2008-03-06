@@ -1,1 +1,1 @@
--lfmt -ldir_array -lopen -lbin -lstr -lalloc
+-lscan -lsig -lbuffer -lfmt -ldir_array -lbin -lstr -lalloc

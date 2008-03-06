@@ -4,6 +4,7 @@
 
 #define PLEXLOG_IMPLEMENTATION
 #include "plexlog.h"
+#include "fd_lock.h"
 
 int
 px_lock(struct plexlog *px)
@@ -17,13 +18,9 @@ px_lock(struct plexlog *px)
 
   if (fchdir(px->px_fd_logdir) == -1) goto FAIL;
 
-  px->px_fd_lock = open("lock", O_WRONLY | O_CREAT | O_EXLOCK, 0644);
+  px->px_fd_lock = open("lock", O_WRONLY | O_CREAT, 0644);
   if (px->px_fd_lock == -1) goto FAIL;
-
-  px->px_buf.fd = open("current", O_WRONLY | O_CREAT | O_APPEND, 0644);
-  if (px->px_buf.fd == -1) goto FAIL;
-
-  if (fstat(px->px_buf.fd, &px->px_curstat) == -1) goto FAIL;
+  if (fd_lock_w(px->px_fd_lock) == -1) goto FAIL;
   return 1;
 
   FAIL:
@@ -37,9 +34,10 @@ int
 px_unlock(struct plexlog *px)
 {
   if (px->px_fd_lock == -1) return 0;
-  if (close(px->px_buf.fd) == -1) return 0;
   if (unlink("lock") == -1) return 0;
+  if (fd_unlock_w(px->px_fd_lock) == -1) return 0;
   if (close(px->px_fd_lock) == -1) return 0;
+  px->px_fd_lock = -1;
   if (fchdir(px->px_fd_pwd) == -1) return 0;
   return 1;
 }

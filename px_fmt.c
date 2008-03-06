@@ -1,3 +1,4 @@
+#include <chrono/taia.h>
 #include <corelib/bin.h>
 #include <corelib/fmt.h>
 #include <corelib/str.h>
@@ -32,4 +33,17 @@ px_fmt_char(char *ptr, unsigned int ch)
     ptr[0] = (char) ch;
   }
   return 1;
+}
+
+unsigned int
+px_fmt_timestamp(char *ptr)
+{
+  struct taia tai;
+
+  if (ptr) {
+    taia_now(&tai);
+    taia_tai64n(ptr + 1, &tai);
+    ptr[0] = '@';
+  }
+  return TAIA_TAI64N;
 }
