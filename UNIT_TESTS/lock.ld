@@ -1,4 +1,4 @@
-t_lock1.o
+lock.o
 t_assert.o
 ../plexlog.a
 ../fd_lock.a

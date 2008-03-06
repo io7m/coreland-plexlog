@@ -15,7 +15,6 @@ main(void)
   test_assert(px_lock(&px) == 1);
   test_assert(px_unlock(&px) == 1);
 
-  alarm(1);
   test_assert(px_lock(&px) == 1);
   test_assert(px_unlock(&px) == 1);
 

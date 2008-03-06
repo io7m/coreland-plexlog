@@ -6,13 +6,15 @@
 
 static unsigned long test_num;
 
-static void test_assert_fail(void)
+void
+test_assert_fail(void)
 {
   exit(1);
 }
 
-void test_assert_core(unsigned int cond, const char *fname,
-                      unsigned long line, const char *text)
+void
+test_assert_core(unsigned int cond, const char *fname,
+                 unsigned long line, const char *text)
 {
   if (!cond) {
     if (!errno) 

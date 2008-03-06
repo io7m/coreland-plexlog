@@ -1,0 +1,9 @@
+#!/bin/sh
+
+dir="./testdata/lock4"
+
+./lock 0 2 0 "$dir" &
+./lock 0 2 1 "$dir" &
+./lock 0 2 2 "$dir" &
+
+wait
