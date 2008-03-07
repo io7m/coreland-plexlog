@@ -1,3 +1,5 @@
+#include <corelib/error.h>
+
 #include "t_assert.h"
 #include "../plexlog.h"
 
@@ -7,6 +9,6 @@ main(void)
   struct plexlog px;
 
   test_assert(px_open(&px, "/nonexistent", 0, 0) == 0);
-  test_assert(px_close(&px) == 1);
+  test_assert(errno == error_noent);
   return 0;
 }
