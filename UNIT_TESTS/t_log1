@@ -1,0 +1,55 @@
+#!/bin/sh
+
+dir="testdata/log"
+
+cleanup()
+{
+  rm -r "$dir"
+}
+
+die()
+{
+  echo "fatal: $1" 1>&2
+  cleanup
+  exit 1
+}
+
+makedir()
+{
+  echo "mkdir $1"
+  mkdir "$1" || die "could not create $1"
+}
+
+exists()
+{
+  if [ ! -f "$dir/$1" ]; then die "$dir/$1 does not exist"; fi
+}
+
+nonexistent()
+{
+  if [ -f "$dir/$1" ]; then die "$dir/$1 exists"; fi
+}
+
+lines()
+{
+  (i=0; while [ $i -ne $1 ]; do echo "$2"; i=`expr $i + 1`; done)
+}
+
+log()
+{
+  echo "log $1 $2"
+  lines "$1" "$2" | ./log "$dir" 0 1024 || die "could not write log"
+}
+
+makedir "$dir"
+
+log 256 "AAAA"
+log 256 "BBBB"
+log 256 "CCCC"
+log 256 "DDDD"
+
+exit 0
+
+exists "current"
+
+cleanup
