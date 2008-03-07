@@ -8,7 +8,7 @@ main(void)
 {
   struct plexlog px;
 
-  test_assert(px_open(&px, "/nonexistent", 0, 0) == 0);
+  test_assert(px_open(&px, "/nonexistent") == 0);
   test_assert(errno == error_noent);
   return 0;
 }

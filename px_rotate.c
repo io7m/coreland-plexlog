@@ -28,6 +28,7 @@ px_dir_rotate(struct plexlog *px)
   unsigned long dir_f;
   unsigned long max_f;
   char *name;
+  int ret = 0;
 
   px->px_darray.cmp = px_cmp_date;
   px->px_darray.filter = px_filt_log;
@@ -38,12 +39,16 @@ px_dir_rotate(struct plexlog *px)
     max_f = px->px_file_max;
     for (;;) {
       if (max_f >= dir_f) break;
-      if (!dir_array_next(&px->px_darray, &name)) return 0;
-      if (unlink(name) == -1) return 0;
+      if (!dir_array_next(&px->px_darray, &name)) goto END;
+      if (unlink(name) == -1) goto END;
       --dir_f;
     }
   }
-  return 1;
+
+  ret = 1;
+  END:
+  dir_array_free(&px->px_darray);
+  return ret;
 }
 
 int

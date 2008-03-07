@@ -22,7 +22,9 @@ main(int argc, char *argv[])
   if (!scan_ulong(argv[3], &max_size)) errx(2, "max_size must be numeric");
   if (!dgetline_initbuf(&dg, buffer0)) err(2, "dgetline_init");
 
-  if (!px_open(&px, argv[1], max_file, max_size)) err(2, "px_open");
+  if (!px_open(&px, argv[1])) err(2, "px_open");
+  if (!px_max_files(&px, max_file)) err(2, "px_max_files");
+  if (!px_max_filesize(&px, max_size)) err(2, "px_max_filesize");
 
   for (;;) {
     switch (dgetline_get(&dg)) {

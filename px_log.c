@@ -18,13 +18,9 @@ px_msg_filter_len(const char *txt, unsigned long txt_len)
 }
 
 static unsigned long
-px_msg_total_len(enum plexlog_level lev, const char *txt, unsigned long len)
+px_msg_total_len(const char *levstr, const char *txt, unsigned long len)
 {
-  static const unsigned long base_size = PX_FMT_TIMESTAMP + sizeof(" ")
-    + FMT_ULONG + sizeof(": ") + sizeof(": ") + sizeof("\n");
-
-  return base_size + str_len(px_level_string(lev))
-                   + px_msg_filter_len(txt, len);
+  return PX_MSG_BASE_LEN + str_len(levstr) + px_msg_filter_len(txt, len);
 }
 
 static int
@@ -59,19 +55,24 @@ px_logb(struct plexlog *px, enum plexlog_level lev,
 {
   char tstamp[PX_FMT_TIMESTAMP];
   unsigned long msglen;
+  const char *levstr;
   int ret = 0;
 
-  msglen = px_msg_total_len(lev, txt, len);
-  if (px->px_size_max && msglen > px->px_size_max) return 0;
+  levstr = px_level_string(lev);
+  msglen = px_msg_total_len(levstr, txt, len);
+
+  if (px->px_size_max && (msglen > px->px_size_max)) return 0;
 
   tstamp[px_fmt_timestamp(tstamp)] = 0;
   if (!px_lock(px)) goto END;
-  if (px->px_size_max) {
-    if (px->px_curstat.st_size + msglen > px->px_size_max)
-      if (!px_rotate(px)) goto END;
-  }
   if (!px_open_current(px)) goto END;
-  if (!px_log_write(px, tstamp, px_level_string(lev), txt, len)) goto END;
+  if (px->px_size_max) {
+    if (px->px_curstat.st_size + msglen > px->px_size_max) {
+      if (!px_rotate(px)) goto END;
+      if (!px_open_current(px)) goto END;
+    }
+  }
+  if (!px_log_write(px, tstamp, levstr, txt, len)) goto END;
 
   ret = 1;
   END:

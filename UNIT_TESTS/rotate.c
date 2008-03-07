@@ -28,8 +28,12 @@ main(int argc, char *argv[])
     errx(2, "fatal: max_size must be numeric");
   file = argv[3];
 
-  if (!px_open(&px, file, max_files, max_size))
+  if (!px_open(&px, file))
     err(2, "fatal: px_open");
+  if (!px_max_files(&px, max_files))
+    err(2, "fatal: px_max_files");
+  if (!px_max_filesize(&px, max_size))
+    err(2, "fatal: px_max_filesize");
   if (!px_lock(&px))
     err(2, "fatal: px_lock");
   if (!px_rotate(&px))

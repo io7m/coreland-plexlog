@@ -57,7 +57,7 @@ main(int argc, char *argv[])
   sig_catch(sig_alarm, catch_alarm);
 
   printf("info: %d: try open\n", id);
-  if (!px_open(&px, file, 100, 10))
+  if (!px_open(&px, file))
     err(2, "fatal: %d: px_open", id);
   printf("info: %d: opened\n", id);
 

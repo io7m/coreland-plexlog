@@ -10,7 +10,10 @@ main(void)
 {
   struct plexlog px;
 
-  test_assert(px_open(&px, "testdata/lock1", 100, 10) == 1);
+  rmdir("testdata/lock");
+  mkdir("testdata/lock", 0755);
+
+  test_assert(px_open(&px, "testdata/lock") == 1);
 
   test_assert(px_lock(&px) == 1);
   test_assert(px_unlock(&px) == 1);

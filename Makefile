@@ -4,10 +4,10 @@ default: all
 
 all:\
 UNIT_TESTS/create UNIT_TESTS/lock UNIT_TESTS/log UNIT_TESTS/rotate \
-UNIT_TESTS/t_fmt1 UNIT_TESTS/t_init1 UNIT_TESTS/t_init2 UNIT_TESTS/t_init3 \
-UNIT_TESTS/t_init4 UNIT_TESTS/t_init5 UNIT_TESTS/t_lock1 UNIT_TESTS/t_lock2 \
-UNIT_TESTS/write ctxt/ctxt.a deinstaller inst-check inst-copy inst-dir \
-inst-link installer instchk plexlog-conf plexlog.a 
+UNIT_TESTS/t_fmt1 UNIT_TESTS/t_init1 UNIT_TESTS/t_init2 UNIT_TESTS/t_lock1 \
+UNIT_TESTS/t_lock2 UNIT_TESTS/t_set1 UNIT_TESTS/write ctxt/ctxt.a \
+deinstaller inst-check inst-copy inst-dir inst-link installer instchk \
+plexlog-conf plexlog.a 
 
 # -- SYSDEPS start
 flags-chrono:
@@ -138,36 +138,6 @@ UNIT_TESTS/t_init2.o:\
 cc-compile UNIT_TESTS/t_init2.c UNIT_TESTS/t_assert.h plexlog.h 
 	./cc-compile UNIT_TESTS/t_init2.c
 
-UNIT_TESTS/t_init3:\
-cc-link UNIT_TESTS/t_init3.ld UNIT_TESTS/t_init3.o UNIT_TESTS/t_assert.o \
-plexlog.a 
-	./cc-link UNIT_TESTS/t_init3 UNIT_TESTS/t_init3.o \
-	UNIT_TESTS/t_assert.o plexlog.a 
-
-UNIT_TESTS/t_init3.o:\
-cc-compile UNIT_TESTS/t_init3.c UNIT_TESTS/t_assert.h plexlog.h 
-	./cc-compile UNIT_TESTS/t_init3.c
-
-UNIT_TESTS/t_init4:\
-cc-link UNIT_TESTS/t_init4.ld UNIT_TESTS/t_init4.o UNIT_TESTS/t_assert.o \
-plexlog.a 
-	./cc-link UNIT_TESTS/t_init4 UNIT_TESTS/t_init4.o \
-	UNIT_TESTS/t_assert.o plexlog.a 
-
-UNIT_TESTS/t_init4.o:\
-cc-compile UNIT_TESTS/t_init4.c UNIT_TESTS/t_assert.h plexlog.h 
-	./cc-compile UNIT_TESTS/t_init4.c
-
-UNIT_TESTS/t_init5:\
-cc-link UNIT_TESTS/t_init5.ld UNIT_TESTS/t_init5.o UNIT_TESTS/t_assert.o \
-plexlog.a 
-	./cc-link UNIT_TESTS/t_init5 UNIT_TESTS/t_init5.o \
-	UNIT_TESTS/t_assert.o plexlog.a 
-
-UNIT_TESTS/t_init5.o:\
-cc-compile UNIT_TESTS/t_init5.c UNIT_TESTS/t_assert.h plexlog.h 
-	./cc-compile UNIT_TESTS/t_init5.c
-
 UNIT_TESTS/t_lock1:\
 cc-link UNIT_TESTS/t_lock1.ld UNIT_TESTS/t_lock1.o UNIT_TESTS/t_assert.o \
 plexlog.a 
@@ -187,6 +157,16 @@ plexlog.a
 UNIT_TESTS/t_lock2.o:\
 cc-compile UNIT_TESTS/t_lock2.c UNIT_TESTS/t_assert.h plexlog.h 
 	./cc-compile UNIT_TESTS/t_lock2.c
+
+UNIT_TESTS/t_set1:\
+cc-link UNIT_TESTS/t_set1.ld UNIT_TESTS/t_set1.o UNIT_TESTS/t_assert.o \
+plexlog.a 
+	./cc-link UNIT_TESTS/t_set1 UNIT_TESTS/t_set1.o \
+	UNIT_TESTS/t_assert.o plexlog.a 
+
+UNIT_TESTS/t_set1.o:\
+cc-compile UNIT_TESTS/t_set1.c UNIT_TESTS/t_assert.h plexlog.h 
+	./cc-compile UNIT_TESTS/t_set1.c
 
 UNIT_TESTS/write:\
 cc-link UNIT_TESTS/write.ld UNIT_TESTS/write.o 
@@ -424,20 +404,19 @@ obj_clean:
 	UNIT_TESTS/lock.o UNIT_TESTS/log UNIT_TESTS/log.o UNIT_TESTS/rotate \
 	UNIT_TESTS/rotate.o UNIT_TESTS/t_assert.o UNIT_TESTS/t_fmt1 \
 	UNIT_TESTS/t_fmt1.o UNIT_TESTS/t_init1 UNIT_TESTS/t_init1.o \
-	UNIT_TESTS/t_init2 UNIT_TESTS/t_init2.o UNIT_TESTS/t_init3 \
-	UNIT_TESTS/t_init3.o UNIT_TESTS/t_init4 UNIT_TESTS/t_init4.o \
-	UNIT_TESTS/t_init5 UNIT_TESTS/t_init5.o UNIT_TESTS/t_lock1 \
+	UNIT_TESTS/t_init2 UNIT_TESTS/t_init2.o UNIT_TESTS/t_lock1 \
 	UNIT_TESTS/t_lock1.o UNIT_TESTS/t_lock2 UNIT_TESTS/t_lock2.o \
-	UNIT_TESTS/write UNIT_TESTS/write.o conf-cctype conf-ldtype \
-	conf-systype ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
+	UNIT_TESTS/t_set1 UNIT_TESTS/t_set1.o UNIT_TESTS/write \
+	UNIT_TESTS/write.o conf-cctype conf-ldtype conf-systype \
+	ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
 	ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
 	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o \
 	deinstaller deinstaller.o fd_lock.o inst-check inst-check.o \
 	inst-copy inst-copy.o inst-dir inst-dir.o inst-link inst-link.o \
 	install_core.o install_error.o installer installer.o instchk \
-	instchk.o insthier.o mk-ctxt plexlog-conf plexlog-conf.o 
-	rm -f plexlog.a px_close.o px_fmt.o px_level.o px_lock.o px_log.o \
-	px_open.o px_rotate.o 
+	instchk.o insthier.o plexlog-conf plexlog-conf.o plexlog.a \
+	px_close.o px_fmt.o px_level.o px_lock.o 
+	rm -f px_log.o px_open.o px_rotate.o 
 
 deinstall: deinstaller inst-check inst-copy inst-dir inst-link
 	./deinstaller

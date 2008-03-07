@@ -39,5 +39,6 @@ px_unlock(struct plexlog *px)
   if (close(px->px_fd_lock) == -1) return 0;
   px->px_fd_lock = -1;
   if (fchdir(px->px_fd_pwd) == -1) return 0;
+  if (close(px->px_fd_pwd) == -1) return 0;
   return 1;
 }

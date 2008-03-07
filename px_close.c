@@ -15,8 +15,6 @@ px_close(struct plexlog *px)
   if (px->px_fd_pwd != -1) close(px->px_fd_pwd);
   if (px->px_fd_logdir != -1) close(px->px_fd_logdir);
 
-  dir_array_free(&px->px_darray);
-
   bin_zero(px, sizeof(*px));
   return 1;
 }

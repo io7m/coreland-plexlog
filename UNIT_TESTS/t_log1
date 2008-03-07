@@ -33,7 +33,7 @@ nonexistent()
 log()
 {
   echo "log $1 $2"
-  ./write "$1" "$2" | ./log "$dir" 0 1024 || die "could not write log"
+  ./write "$1" "$2" | ./log "$dir" 0 4096 || die "could not write log"
 }
 
 check_num()
@@ -44,15 +44,15 @@ check_num()
 
 makedir "$dir"
 
-log 256 "AAAA"
-log 256 "BBBB"
-log 256 "CCCC"
-log 256 "DDDD"
+log 4096 "AAAA"
+log 4096 "BBBB"
+log 4096 "CCCC"
+log 4096 "DDDD"
 
-check_num "AAAA" 256
-check_num "BBBB" 256
-check_num "CCCC" 256
-check_num "DDDD" 256
+check_num "AAAA" 4096
+check_num "BBBB" 4096
+check_num "CCCC" 4096
+check_num "DDDD" 4096
 
 exists "current"
 
