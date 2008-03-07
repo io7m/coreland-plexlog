@@ -16,8 +16,6 @@ px_level_string(enum plexlog_level lev)
     { PXLOG_ERROR, "error" },
     { PXLOG_FATAL, "fatal" },
   };
-  unsigned long ind;
-  for (ind = 0; ind < sizeof(strings) / sizeof(strings[0]); ++ind)
-    if (strings[ind].val == lev) return strings[ind].str;
-  return strings[0].str;
+  static const unsigned int strings_size = sizeof(strings) / sizeof(strings[0]);
+  return (lev >= strings_size) ? strings[0].str : strings[lev].str;
 }

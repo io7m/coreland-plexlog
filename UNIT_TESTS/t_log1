@@ -30,15 +30,16 @@ nonexistent()
   if [ -f "$dir/$1" ]; then die "$dir/$1 exists"; fi
 }
 
-lines()
-{
-  (i=0; while [ $i -ne $1 ]; do echo "$2"; i=`expr $i + 1`; done)
-}
-
 log()
 {
   echo "log $1 $2"
-  lines "$1" "$2" | ./log "$dir" 0 1024 || die "could not write log"
+  ./write "$1" "$2" | ./log "$dir" 0 1024 || die "could not write log"
+}
+
+check_num()
+{
+  val=`grep "$1" "$dir"/* | wc -l`
+  if [ $val -ne $2 ]; then die "expected $2 written lines of $1, got $val"; fi
 }
 
 makedir "$dir"
@@ -48,7 +49,10 @@ log 256 "BBBB"
 log 256 "CCCC"
 log 256 "DDDD"
 
-exit 0
+check_num "AAAA" 256
+check_num "BBBB" 256
+check_num "CCCC" 256
+check_num "DDDD" 256
 
 exists "current"
 

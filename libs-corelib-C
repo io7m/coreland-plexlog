@@ -1,1 +1,1 @@
--lscan -lsig -lbuffer -lfmt -ldir_array -lbin -lstr -lalloc
+-ldgetline -ldstring -lscan -lsig -lbuffer -lfmt -ldir_array -lbin -lstr -lalloc -lerror

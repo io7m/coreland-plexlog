@@ -1,3 +1,6 @@
+#include <unistd.h>
+
+#include <corelib/fmt.h>
 #include <corelib/str.h>
 
 #define PLEXLOG_IMPLEMENTATION
@@ -17,11 +20,11 @@ px_msg_filter_len(const char *txt, unsigned long txt_len)
 static unsigned long
 px_msg_total_len(enum plexlog_level lev, const char *txt, unsigned long len)
 {
-  return (PX_FMT_TIMESTAMP + sizeof(" "))
-        + str_len(px_level_string(lev))
-        + sizeof(": ")
-        + px_msg_filter_len(txt, len)
-        + sizeof("\n");
+  static const unsigned long base_size = PX_FMT_TIMESTAMP + sizeof(" ")
+    + FMT_ULONG + sizeof(": ") + sizeof(": ") + sizeof("\n");
+
+  return base_size + str_len(px_level_string(lev))
+                   + px_msg_filter_len(txt, len);
 }
 
 static int
@@ -30,9 +33,13 @@ px_log_write(struct plexlog *px, const char *tstamp, const char *levstr,
 {
   unsigned long ind;
   char cbuf[PX_FMT_CHAR];
+  char cnum[FMT_ULONG];
 
   buffer_puts(&px->px_buf, tstamp);
   buffer_put(&px->px_buf, " ", 1);
+  buffer_put(&px->px_buf, cnum, fmt_ulong(cnum, getpid()));
+  buffer_put(&px->px_buf, " ", 1);
+
   if (!str_same(levstr, "")) {
     buffer_puts(&px->px_buf, levstr);
     buffer_put(&px->px_buf, ": ", 2);
@@ -65,7 +72,6 @@ px_logb(struct plexlog *px, enum plexlog_level lev,
   }
   if (!px_open_current(px)) goto END;
   if (!px_log_write(px, tstamp, px_level_string(lev), txt, len)) goto END;
-  if (!px_unlock(px)) return 0;
 
   ret = 1;
   END:
