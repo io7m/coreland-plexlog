@@ -29,11 +29,10 @@ struct plexlog {
   int px_fd_logdir;
   int px_fd_pwd;
   int px_fd_lock;
-  const char *px_dir;
   char px_cbuf[BUFFER_OUTSIZE];
   struct buffer px_buf;
   struct dir_array px_darray;
-  struct stat px_curstat;
+  struct stat px_stat;
 };
 
 int px_open(struct plexlog *, const char *);
@@ -50,7 +49,7 @@ int px_close(struct plexlog *);
 #define PX_FMT_TIMESTAMP 32
 
 /* @4000000047d18117009557a4 20920 : \n */
-#define PX_MSG_BASE_LEN PX_FMT_TIMESTAMP + FMT_ULONG + 5
+#define PX_MSG_BASE_LEN (PX_FMT_TIMESTAMP + FMT_ULONG + 5)
 
 unsigned int px_fmt_char(char *, unsigned int);
 unsigned int px_fmt_timestamp(char *);

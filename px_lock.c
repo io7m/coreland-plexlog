@@ -24,9 +24,7 @@ px_lock(struct plexlog *px)
   return 1;
 
   FAIL:
-  etmp = errno;
-  px_unlock(px);
-  errno = etmp;
+  etmp = errno; px_unlock(px); errno = etmp;
   return 0;
 }
 

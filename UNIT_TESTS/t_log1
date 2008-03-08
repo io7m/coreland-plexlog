@@ -33,7 +33,7 @@ nonexistent()
 log()
 {
   echo "log $1 $2"
-  ./write "$1" "$2" | ./log "$dir" 0 4096 || die "could not write log"
+  ./lines "$1" "$2" | ./log "$dir" 0 4096 || die "could not write log"
 }
 
 check_num()

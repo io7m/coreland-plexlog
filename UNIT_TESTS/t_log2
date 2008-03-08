@@ -22,4 +22,8 @@ makedir()
 
 makedir "$dir"
 
+./write 4096 "a" | ./log "$dir" 8 4096
+
+exit 0
+
 cleanup

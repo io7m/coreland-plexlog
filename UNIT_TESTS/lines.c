@@ -15,9 +15,8 @@ main(int argc, char *argv[])
 
   for (;;) {
     if (!num) break;
-    printf("%s", argv[2]);
+    printf("%s\n", argv[2]);
     --num;
   }
-  printf("\n");
   return 0;
 }

@@ -35,21 +35,17 @@ px_open(struct plexlog *px, const char *dir)
   px->px_size_max = PX_SIZE_DEFAULT;
   px->px_file_max = PX_FILE_DEFAULT;
 
-  dir_array_init(&px->px_darray);
-  if (!str_dup(dir, (char **) &px->px_dir)) goto FAIL;
-
   px->px_fd_lock = -1;
   px->px_fd_pwd = -1;
   px->px_fd_logdir = open(dir, O_RDONLY);
   if (px->px_fd_logdir == -1) goto FAIL;
 
+  dir_array_init(&px->px_darray);
   buffer_init(&px->px_buf, (buffer_op) write, -1, px->px_cbuf, sizeof(px->px_cbuf));
   return 1;
 
   FAIL:
-  etmp = errno;
-  px_close(px);
-  errno = etmp;
+  etmp = errno; px_close(px); errno = etmp;
   return 0;
 }
 
@@ -62,7 +58,7 @@ px_open_current(struct plexlog *px)
   px->px_buf.fd = open("current", O_WRONLY | O_CREAT | O_APPEND, 0644);
   if (px->px_buf.fd == -1) return 0;
 
-  if (fstat(px->px_buf.fd, &px->px_curstat) == -1) {
+  if (fstat(px->px_buf.fd, &px->px_stat) == -1) {
     close(px->px_buf.fd);
     return 0;
   }

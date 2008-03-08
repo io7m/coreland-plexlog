@@ -10,7 +10,6 @@
 int
 px_close(struct plexlog *px)
 {
-  if (px->px_dir) dealloc_null(&px->px_dir);
   if (px->px_fd_lock != -1) close(px->px_fd_lock);
   if (px->px_fd_pwd != -1) close(px->px_fd_pwd);
   if (px->px_fd_logdir != -1) close(px->px_fd_logdir);
