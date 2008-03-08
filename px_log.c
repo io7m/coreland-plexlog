@@ -24,16 +24,15 @@ px_msg_total_len(const char *levstr, const char *txt, unsigned long len)
 }
 
 static int
-px_log_write(struct plexlog *px, const char *tstamp, const char *levstr,
-  const char *msg, unsigned long msglen)
+px_log_write(struct plexlog *px, const char *ctai, const char *pid,
+  const char *levstr, const char *msg, unsigned long msglen)
 {
   unsigned long ind;
   char cbuf[PX_FMT_CHAR];
-  char cnum[FMT_ULONG];
 
-  buffer_puts(&px->px_buf, tstamp);
+  buffer_puts(&px->px_buf, ctai);
   buffer_put(&px->px_buf, " ", 1);
-  buffer_put(&px->px_buf, cnum, fmt_ulong(cnum, getpid()));
+  buffer_puts(&px->px_buf, pid);
   buffer_put(&px->px_buf, " ", 1);
 
   if (!str_same(levstr, "")) {
@@ -53,7 +52,8 @@ int
 px_logb(struct plexlog *px, enum plexlog_level lev,
   const char *txt, unsigned long len)
 {
-  char tstamp[PX_FMT_TIMESTAMP];
+  char ctai[PX_FMT_TIMESTAMP];
+  char cpid[FMT_ULONG];
   unsigned long msglen;
   const char *levstr;
   int ret = 0;
@@ -63,7 +63,9 @@ px_logb(struct plexlog *px, enum plexlog_level lev,
 
   if (px->px_size_max && (msglen > px->px_size_max)) return 0;
 
-  tstamp[px_fmt_timestamp(tstamp)] = 0;
+  ctai[px_fmt_timestamp(ctai)] = 0;
+  cpid[fmt_ulong(cpid, getpid())] = 0;
+
   if (!px_lock(px)) goto END;
   if (!px_open_current(px)) goto END;
   if (px->px_size_max) {
@@ -72,7 +74,7 @@ px_logb(struct plexlog *px, enum plexlog_level lev,
       if (!px_open_current(px)) goto END;
     }
   }
-  if (!px_log_write(px, tstamp, levstr, txt, len)) goto END;
+  if (!px_log_write(px, ctai, cpid, levstr, txt, len)) goto END;
 
   ret = 1;
   END:
