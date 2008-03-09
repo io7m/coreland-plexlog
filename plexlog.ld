@@ -1,0 +1,2 @@
+plexlog.o
+plexlog.a

@@ -7,6 +7,8 @@
 #include <corelib/buffer.h>
 #include <corelib/dir_array.h>
 
+#include "dir_stack.h"
+
 enum plexlog_level {
   PXLOG_NONE,
   PXLOG_DEBUG,
@@ -27,12 +29,12 @@ struct plexlog {
   unsigned long px_size_max;
   unsigned long px_file_max;
   int px_fd_logdir;
-  int px_fd_pwd;
   int px_fd_lock;
   char px_cbuf[BUFFER_OUTSIZE];
   struct buffer px_buf;
   struct dir_array px_darray;
   struct stat px_stat;
+  struct dir_stack px_dirs;
 };
 
 int px_open(struct plexlog *, const char *);
@@ -50,6 +52,11 @@ int px_close(struct plexlog *);
 
 /* @4000000047d18117009557a4 20920 : \n */
 #define PX_MSG_BASE_LEN (PX_FMT_TIMESTAMP + FMT_ULONG + 5)
+
+#define px_unlocked(px) ((px)->px_fd_lock == -1)
+#define px_locked(px) (!px_unlocked(px))
+#define px_save_errno(px) ((px)->px_etmp = errno)
+#define px_restore_errno(px) (errno = (px)->px_etmp)
 
 unsigned int px_fmt_char(char *, unsigned int);
 unsigned int px_fmt_timestamp(char *);

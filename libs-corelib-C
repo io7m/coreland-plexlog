@@ -1,1 +1,1 @@
--ldgetline -ldstring -lscan -lsig -lbuffer -lfmt -ldir_array -lbin -lstr -lalloc -lerror
+-lopen -lsstack -lsyserr -lget_opt -ldgetline -ldstring -lscan -lsig -lbuffer -lfmt -ldir_array -lbin -lstr -lalloc -lerror

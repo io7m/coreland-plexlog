@@ -7,7 +7,7 @@ UNIT_TESTS/create UNIT_TESTS/lines UNIT_TESTS/lock UNIT_TESTS/log \
 UNIT_TESTS/rotate UNIT_TESTS/t_fmt1 UNIT_TESTS/t_init1 UNIT_TESTS/t_init2 \
 UNIT_TESTS/t_lock1 UNIT_TESTS/t_lock2 UNIT_TESTS/t_set1 UNIT_TESTS/write \
 ctxt/ctxt.a deinstaller inst-check inst-copy inst-dir inst-link installer \
-instchk plexlog-conf plexlog.a 
+instchk plexlog plexlog-conf plexlog.a 
 
 # -- SYSDEPS start
 flags-chrono:
@@ -276,6 +276,10 @@ deinstaller.o:\
 cc-compile deinstaller.c install.h 
 	./cc-compile deinstaller.c
 
+dir_stack.o:\
+cc-compile dir_stack.c dir_stack.h 
+	./cc-compile dir_stack.c
+
 fd_lock.o:\
 cc-compile fd_lock.c fd_lock.h 
 	./cc-compile fd_lock.c
@@ -363,6 +367,10 @@ conf-systype
 mk-systype:\
 conf-cc 
 
+plexlog:\
+cc-link plexlog.ld plexlog.o plexlog.a 
+	./cc-link plexlog plexlog.o plexlog.a 
+
 plexlog-conf:\
 cc-link plexlog-conf.ld plexlog-conf.o ctxt/ctxt.a 
 	./cc-link plexlog-conf plexlog-conf.o ctxt/ctxt.a 
@@ -373,9 +381,16 @@ cc-compile plexlog-conf.c ctxt.h _sysinfo.h
 
 plexlog.a:\
 cc-slib plexlog.sld px_close.o px_fmt.o px_level.o px_lock.o px_log.o \
-px_open.o px_rotate.o fd_lock.o 
+px_open.o px_rotate.o fd_lock.o dir_stack.o 
 	./cc-slib plexlog px_close.o px_fmt.o px_level.o px_lock.o px_log.o \
-	px_open.o px_rotate.o fd_lock.o 
+	px_open.o px_rotate.o fd_lock.o dir_stack.o 
+
+plexlog.h:\
+dir_stack.h 
+
+plexlog.o:\
+cc-compile plexlog.c plexlog.h 
+	./cc-compile plexlog.c
 
 px_close.o:\
 cc-compile px_close.c plexlog.h 
@@ -415,17 +430,16 @@ obj_clean:
 	UNIT_TESTS/t_init1 UNIT_TESTS/t_init1.o UNIT_TESTS/t_init2 \
 	UNIT_TESTS/t_init2.o UNIT_TESTS/t_lock1 UNIT_TESTS/t_lock1.o \
 	UNIT_TESTS/t_lock2 UNIT_TESTS/t_lock2.o UNIT_TESTS/t_set1 \
-	UNIT_TESTS/t_set1.o UNIT_TESTS/write UNIT_TESTS/write.o conf-cctype \
-	conf-ldtype conf-systype ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a \
-	ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o \
-	ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
-	ctxt/version.c ctxt/version.o deinstaller deinstaller.o fd_lock.o \
-	inst-check inst-check.o inst-copy inst-copy.o inst-dir inst-dir.o \
-	inst-link inst-link.o install_core.o install_error.o installer \
-	installer.o instchk instchk.o insthier.o mk-ctxt plexlog-conf \
-	plexlog-conf.o plexlog.a px_close.o 
-	rm -f px_fmt.o px_level.o px_lock.o px_log.o px_open.o px_rotate.o \
-	
+	UNIT_TESTS/t_set1.o UNIT_TESTS/write UNIT_TESTS/write.o \
+	ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
+	ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
+	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o \
+	deinstaller deinstaller.o dir_stack.o fd_lock.o inst-check \
+	inst-check.o inst-copy inst-copy.o inst-dir inst-dir.o inst-link \
+	inst-link.o install_core.o install_error.o installer installer.o \
+	instchk instchk.o insthier.o plexlog plexlog-conf plexlog-conf.o \
+	plexlog.a plexlog.o px_close.o px_fmt.o 
+	rm -f px_level.o px_lock.o px_log.o px_open.o px_rotate.o 
 
 deinstall: deinstaller inst-check inst-copy inst-dir inst-link
 	./deinstaller
