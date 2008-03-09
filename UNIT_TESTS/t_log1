@@ -42,6 +42,7 @@ check_num()
   if [ $val -ne $2 ]; then die "expected $2 written lines of $1, got $val"; fi
 }
 
+cleanup
 makedir "$dir"
 
 log 4096 "AAAA"
