@@ -13,7 +13,7 @@ px_cmp_date(const char *a, const char *b, void *x)
 
   if (stat(a, &sba) == -1) return 0;
   if (stat(b, &sbb) == -1) return 1;
-  return (sba.st_birthtime - sbb.st_birthtime);
+  return (sba.st_mtime - sbb.st_mtime);
 }
 
 static int

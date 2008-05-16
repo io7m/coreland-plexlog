@@ -1,1 +1,2 @@
 20080308 version: plexlog 0.1
+20080516 code: use mtime instead of birthtime in stat. more portable.
