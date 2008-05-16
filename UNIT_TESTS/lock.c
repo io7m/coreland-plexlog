@@ -49,7 +49,7 @@ main(int argc, char *argv[])
     errx(2, "fatal: t_alarm must be numeric");
   if (!scan_uint(argv[2], &t_wait))
     errx(2, "fatal: t_wait must be numeric");
-  if (!scan_uint(argv[3], &id))
+  if (!scan_uint(argv[3], (unsigned int *) &id))
     errx(2, "fatal: id must be numeric");
 
   file = argv[4];
