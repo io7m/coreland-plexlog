@@ -4,5 +4,6 @@ tests_clean:
 list_tests:
 	./list-tests > testlist
 run_tests:
+	./setup-tests
 	./run-tests -v
 clean: tests_clean
