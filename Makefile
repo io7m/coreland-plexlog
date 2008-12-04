@@ -11,28 +11,27 @@ UNIT_TESTS/t_init2.o UNIT_TESTS/t_lock1 UNIT_TESTS/t_lock1.o UNIT_TESTS/t_lock2 
 UNIT_TESTS/t_lock2.o UNIT_TESTS/t_set1 UNIT_TESTS/t_set1.o UNIT_TESTS/write \
 UNIT_TESTS/write.o ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o \
 ctxt/repos.o ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o \
-dir_stack.o fd_lock.o inst-check inst-check.o inst-copy inst-copy.o inst-dir \
-inst-dir.o inst-link inst-link.o install_core.o install_error.o installer \
-installer.o instchk instchk.o insthier.o plexlog plexlog-conf plexlog-conf.o \
-plexlog.a plexlog.o px_close.o px_fmt.o px_level.o px_lock.o px_log.o px_open.o \
-px_rotate.o
+dir_stack.o fd_lock.o install-core.o install-error.o install-posix.o \
+install-win32.o install.a installer installer.o instchk instchk.o insthier.o \
+plexlog plexlog-conf plexlog-conf.o plexlog.a plexlog.o px_close.o px_fmt.o \
+px_level.o px_lock.o px_log.o px_open.o px_rotate.o
 
 # Mkf-deinstall
-deinstall: deinstaller inst-check inst-copy inst-dir inst-link
+deinstall: deinstaller conf-sosuffix
 	./deinstaller
-deinstall-dryrun: deinstaller inst-check inst-copy inst-dir inst-link
+deinstall-dryrun: deinstaller conf-sosuffix
 	./deinstaller dryrun
 
 # Mkf-install
-install: installer inst-check inst-copy inst-dir inst-link postinstall
+install: installer postinstall conf-sosuffix
 	./installer
 	./postinstall
 
-install-dryrun: installer inst-check inst-copy inst-dir inst-link
+install-dryrun: installer conf-sosuffix
 	./installer dryrun
 
 # Mkf-instchk
-install-check: instchk inst-check
+install-check: instchk conf-sosuffix
 	./instchk
 
 # Mkf-test
@@ -224,11 +223,11 @@ cc-slib:\
 conf-systype
 
 conf-cctype:\
-conf-cc conf-cc mk-cctype
+conf-cc mk-cctype
 	./mk-cctype > conf-cctype.tmp && mv conf-cctype.tmp conf-cctype
 
 conf-ldtype:\
-conf-ld conf-ld mk-ldtype
+conf-ld mk-ldtype
 	./mk-ldtype > conf-ldtype.tmp && mv conf-ldtype.tmp conf-ldtype
 
 conf-sosuffix:\
@@ -300,10 +299,8 @@ cc-compile ctxt/version.c
 	./cc-compile ctxt/version.c
 
 deinstaller:\
-cc-link deinstaller.ld deinstaller.o insthier.o install_core.o install_error.o \
-ctxt/ctxt.a
-	./cc-link deinstaller deinstaller.o insthier.o install_core.o install_error.o \
-	ctxt/ctxt.a
+cc-link deinstaller.ld deinstaller.o insthier.o install.a ctxt/ctxt.a
+	./cc-link deinstaller deinstaller.o insthier.o install.a ctxt/ctxt.a
 
 deinstaller.o:\
 cc-compile deinstaller.c install.h
@@ -317,61 +314,42 @@ fd_lock.o:\
 cc-compile fd_lock.c fd_lock.h
 	./cc-compile fd_lock.c
 
-inst-check:\
-cc-link inst-check.ld inst-check.o install_error.o
-	./cc-link inst-check inst-check.o install_error.o
+install-core.o:\
+cc-compile install-core.c install.h
+	./cc-compile install-core.c
 
-inst-check.o:\
-cc-compile inst-check.c install.h
-	./cc-compile inst-check.c
+install-error.o:\
+cc-compile install-error.c install.h
+	./cc-compile install-error.c
 
-inst-copy:\
-cc-link inst-copy.ld inst-copy.o install_error.o
-	./cc-link inst-copy inst-copy.o install_error.o
+install-posix.o:\
+cc-compile install-posix.c install.h
+	./cc-compile install-posix.c
 
-inst-copy.o:\
-cc-compile inst-copy.c install.h
-	./cc-compile inst-copy.c
+install-win32.o:\
+cc-compile install-win32.c install.h
+	./cc-compile install-win32.c
 
-inst-dir:\
-cc-link inst-dir.ld inst-dir.o install_error.o
-	./cc-link inst-dir inst-dir.o install_error.o
+install.a:\
+cc-slib install.sld install-core.o install-posix.o install-win32.o \
+install-error.o
+	./cc-slib install install-core.o install-posix.o install-win32.o \
+	install-error.o
 
-inst-dir.o:\
-cc-compile inst-dir.c install.h
-	./cc-compile inst-dir.c
-
-inst-link:\
-cc-link inst-link.ld inst-link.o install_error.o
-	./cc-link inst-link inst-link.o install_error.o
-
-inst-link.o:\
-cc-compile inst-link.c install.h
-	./cc-compile inst-link.c
-
-install_core.o:\
-cc-compile install_core.c install.h
-	./cc-compile install_core.c
-
-install_error.o:\
-cc-compile install_error.c install.h
-	./cc-compile install_error.c
+install.h:\
+install_os.h
 
 installer:\
-cc-link installer.ld installer.o insthier.o install_core.o install_error.o \
-ctxt/ctxt.a
-	./cc-link installer installer.o insthier.o install_core.o install_error.o \
-	ctxt/ctxt.a
+cc-link installer.ld installer.o insthier.o install.a ctxt/ctxt.a
+	./cc-link installer installer.o insthier.o install.a ctxt/ctxt.a
 
 installer.o:\
 cc-compile installer.c install.h
 	./cc-compile installer.c
 
 instchk:\
-cc-link instchk.ld instchk.o insthier.o install_core.o install_error.o \
-ctxt/ctxt.a
-	./cc-link instchk instchk.o insthier.o install_core.o install_error.o \
-	ctxt/ctxt.a
+cc-link instchk.ld instchk.o insthier.o install.a ctxt/ctxt.a
+	./cc-link instchk instchk.o insthier.o install.a ctxt/ctxt.a
 
 instchk.o:\
 cc-compile instchk.c install.h
@@ -392,13 +370,13 @@ mk-ldtype:\
 conf-ld conf-systype conf-cctype
 
 mk-mk-ctxt:\
-conf-cc
+conf-cc conf-ld
 
 mk-sosuffix:\
 conf-systype
 
 mk-systype:\
-conf-cc
+conf-cc conf-ld
 
 plexlog:\
 cc-link plexlog.ld plexlog.o plexlog.a
@@ -465,11 +443,10 @@ obj_clean:
 	UNIT_TESTS/write.o ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
 	ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
 	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
-	deinstaller.o dir_stack.o fd_lock.o inst-check inst-check.o inst-copy \
-	inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o \
-	install_error.o installer installer.o instchk instchk.o insthier.o plexlog \
-	plexlog-conf plexlog-conf.o plexlog.a plexlog.o px_close.o px_fmt.o px_level.o \
-	px_lock.o px_log.o px_open.o px_rotate.o
+	deinstaller.o dir_stack.o fd_lock.o install-core.o install-error.o \
+	install-posix.o install-win32.o install.a installer installer.o instchk \
+	instchk.o insthier.o plexlog plexlog-conf plexlog-conf.o plexlog.a plexlog.o \
+	px_close.o px_fmt.o px_level.o px_lock.o px_log.o px_open.o px_rotate.o
 ext_clean:
 	rm -f conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 
