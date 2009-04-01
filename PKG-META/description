@@ -1,0 +1,16 @@
+<p>
+This package provides a means for an unlimited number of cooperating processes
+to safely log to a single directory. Log rotation is entirely automatic and will
+never exceed a given space limit. No daemon processes are required.
+</p>
+<p>
+The package is implemented as a tiny C library (less than 500 lines) for easy
+embedding into any program.
+</p>
+<p>
+Bindings to the library from multiple languages are available.
+</p>
+<ul>
+  <li><a href="/code/plexlog-lua">plexlog-lua</a></li>
+  <li><a href="/code/plexlog-ada">plexlog-ada</a></li>
+</ul>
